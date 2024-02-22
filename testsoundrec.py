@@ -1,49 +1,98 @@
 import sounddevice as sd
-import soundfile as sf
-import datetime
+import numpy as np
+import wave
 
-def record_audio(duration):
-    # Set the sample rate and number of channels
-    sample_rate = 44100
-    channels = 1
 
-    # Calculate the number of samples to record
-    num_samples = int(duration * sample_rate)
+samplerate = 44100  # Hertz
 
-    # Start recording audio
-    recording = sd.rec(num_samples, samplerate=sample_rate, channels=channels)
-
-    # Wait for the recording to complete
-    sd.wait()
-
-    # Generate a filename in a folder for every day and give file name based on the current time
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"recordings/{current_time}.wav"
-
+def record_audio(duration, samplerate=samplerate, channels=2):
+    """
+    Record audio with the given parameters.
     
+    :param duration: Duration of the recording in seconds
+    :param samplerate: Sampling rate in samples/second
+    :param channels: Number of audio channels
+    :return: Numpy array with recorded data
+    """
+    print(f"Recording for {duration} seconds...")
+    recording = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=channels, dtype='int16')
+    sd.wait()  # Wait until recording is finished
+    print("Recording finished.")
+    return recording
+
+def save_wave_file(filename, data, samplerate=44100, channels=2):
+    """
+    Save recorded data to a WAV file.
+    
+    :param filename: Path to save the WAV file
+    :param data: Numpy array with audio data
+    :param samplerate: Sampling rate in samples/second
+    :param channels: Number of audio channels
+    """
+    with wave.open(filename, 'wb') as wf:
+        wf.setnchannels(channels)
+        wf.setsampwidth(2)  # Number of bytes, int16 -> 2 bytes
+        wf.setframerate(samplerate)
+        wf.writeframes(data)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import spectrogram
+
+def draw_log_spectrogram(audio_data, samplerate,filename):
+    """
+    Draws a spectrogram on a logarithmic scale focusing on lower frequencies.
+
+    :param audio_data: Numpy array containing the audio data.
+    :param samplerate: The samplerate of the audio data.
+    """
+    # Compute the spectrogram
+    f, t, Sxx = spectrogram(audio_data, fs=samplerate, window='hann', nperseg=1024, noverlap=512)
+    
+    # Convert Sxx to dB, avoiding log of zero by adding a small epsilon
+    Sxx_dB = 10 * np.log10(Sxx + np.finfo(float).eps)
+    
+    # Plot
+    plt.figure(figsize=(10, 6))
+    plt.pcolormesh(t, f, Sxx_dB, shading='gouraud')
+    
+    # Set the y-axis to logarithmic scale, focusing around 400 Hz
+    plt.yscale('symlog', linthresh=400, linscale=0.5)
+    plt.ylim(20, samplerate // 2)  # Display from 20 Hz to Nyquist frequency
+    
+    plt.ylabel('Frequency [Hz]')
+    plt.xlabel('Time [sec]')
+    plt.title('Logarithmic Spectrogram')
+    plt.colorbar(label='Intensity [dB]')
+    plt.show()
+
+    plt.savefig(filename + ".png")
+
+# Example usage (uncomment and replace `audio_data` and `samplerate` with actual values)
+# audio_data = np.random.randn(44100)  # Example random noise, replace with actual audio data
+# samplerate = 44100  # Example sample rate, replace with actual sample rate of the audio
+# draw_log_spectrogram(audio_data, samplerate)
 
 
+def main():
+    print("Available input devices:")
+    print(sd.query_devices())
+    device = int(input("Enter the input device index: "))
+    duration = float(input("Enter the duration of the recording in seconds: "))
+    filename = input("Enter the filename to save the recording: ")
+    
+    # Set the device
+    sd.default.device = device
+    
+    # Record audio
+    recorded_data = record_audio(duration)
+    
+    # Save the recording
+    save_wave_file(filename, recorded_data)
 
-    # Save the recording as a WAV file
-    sf.write(filename, recording, sample_rate)
-
-# Record audio for 30 seconds
-
-duration_m= int(input("Enter the duration of the recording in minutes: "))
-duration_s = duration_m 
-duration_per_recording = input("Enter the duration of each recording in seconds (if NAN duration = 10 sec): ")
-if duration_per_recording == "":
-    duration_per_recording = 10
-
-duration_per_recording = int(duration_per_recording)
-num_recordings = duration_s // duration_per_recording
-for i in range(num_recordings):
-    print(f"Recording {i+1} of {num_recordings}...")
-    record_audio(duration_per_recording)
-    print("Finished recording.")
-    print(f"Recording found at recording/{filename}")
-
-print("Finished recording all audio.")
+    # Draw the spectrogram
+    draw_log_spectrogram(recorded_data[:, 0], samplerate, filename)
 
 
-
+# Uncomment the following line when running the script
+main()
