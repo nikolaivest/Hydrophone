@@ -1,7 +1,8 @@
 import sounddevice as sd
 import numpy as np
 import wave
-
+import matplotlib.pyplot as plt
+from scipy.signal import spectrogram
 
 samplerate = 44100  # Hertz
 
@@ -29,15 +30,17 @@ def save_wave_file(filename, data, samplerate=44100, channels=2):
     :param samplerate: Sampling rate in samples/second
     :param channels: Number of audio channels
     """
+    
+    if not filename.endswith('.wav'):
+        filename += '.wav'
+
     with wave.open(filename, 'wb') as wf:
         wf.setnchannels(channels)
         wf.setsampwidth(2)  # Number of bytes, int16 -> 2 bytes
         wf.setframerate(samplerate)
         wf.writeframes(data)
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import spectrogram
+
 
 def draw_log_spectrogram(audio_data, samplerate,filename):
     """
