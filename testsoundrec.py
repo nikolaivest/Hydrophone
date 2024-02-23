@@ -50,6 +50,7 @@ def draw_log_spectrogram(audio_data, samplerate,filename):
     :param samplerate: The samplerate of the audio data.
     """
     # Compute the spectrogram
+    print("Trying to create spectrogram")
     f, t, Sxx = spectrogram(audio_data, fs=samplerate, window='hann', nperseg=1024, noverlap=512)
     
     # Convert Sxx to dB, avoiding log of zero by adding a small epsilon
@@ -67,9 +68,10 @@ def draw_log_spectrogram(audio_data, samplerate,filename):
     plt.xlabel('Time [sec]')
     plt.title('Logarithmic Spectrogram')
     plt.colorbar(label='Intensity [dB]')
-    plt.show()
+   #no need to show plt.show()
 
     plt.savefig(filename + ".png")
+    print("spectrogram created")
 
 # Example usage (uncomment and replace `audio_data` and `samplerate` with actual values)
 # audio_data = np.random.randn(44100)  # Example random noise, replace with actual audio data
