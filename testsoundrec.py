@@ -62,7 +62,7 @@ def draw_log_spectrogram(audio_data, samplerate,filename):
     
     # Set the y-axis to logarithmic scale, focusing around 400 Hz
     plt.yscale('symlog', linthresh=400, linscale=0.5)
-    plt.ylim(20, samplerate // 2)  # Display from 20 Hz to Nyquist frequency
+    plt.ylim(20, 500)  # Display from 20 Hz to Nyquist frequency
     
     plt.ylabel('Frequency [Hz]')
     plt.xlabel('Time [sec]')
