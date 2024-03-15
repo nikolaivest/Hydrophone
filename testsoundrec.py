@@ -103,14 +103,12 @@ def main():
     sd.default.device = device
     
     # Record audio
-    recorded_data = record_audio(duration)
-    
-    # Save the recording
-    save_wave_file(filename, recorded_data)
+    #recorded_data = record_audio(duration)
+    #save_wave_file(filename, recorded_data)
 
     for i in range(12):
         print(f"TIME={print_time_now()}  Recording {i+1} of 12")
-        record_data = record_audio(duration, device)
+        record_data = record_audio(duration)
         print("Recording finished.")
         save_name = get_filename(filename, i+1)
         print(f"Saving to {save_name}")
@@ -119,7 +117,7 @@ def main():
         print(".....")
         
 
-
+main()
     # Draw the spectrogram
     #draw_log_spectrogram(recorded_data[:, 0], samplerate, filename)
 
