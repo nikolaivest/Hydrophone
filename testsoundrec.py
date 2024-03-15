@@ -105,5 +105,4 @@ def main():
     draw_log_spectrogram(recorded_data[:, 0], samplerate, filename)
 
 
-# Uncomment the following line when running the script
-main()
+
