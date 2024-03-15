@@ -2,6 +2,7 @@ import sounddevice as sd
 import numpy as np
 import wave
 import matplotlib.pyplot as plt
+import datetime as dt
 from scipy.signal import spectrogram
 
 samplerate = 44100  # Hertz
@@ -86,10 +87,16 @@ def get_input_devices():
     print(sd.query_devices())
 
 
+def get_filename(filename,recnumber):
+    return filename + dt.datetime.now().strftime("%H-%M-%S") + "_rec" + str(recnumber)
+
+def print_time_now():
+    print(dt.datetime.now().strftime("%H-%M-%S"))
+
 def main():
     get_input_devices()
-    device = int(input("Enter the input device index: "))
-    duration = float(input("Enter the duration of the recording in seconds: "))
+    device = int(input(f"Enter the input device index: "))
+    duration = 300
     filename = input("Enter the filename to save the recording: ")
     
     # Set the device
@@ -101,8 +108,20 @@ def main():
     # Save the recording
     save_wave_file(filename, recorded_data)
 
+    for i in range(12):
+        print(f"TIME={print_time_now()}  Recording {i+1} of 12")
+        record_data = record_audio(duration, device)
+        print("Recording finished.")
+        save_name = get_filename(filename, i+1)
+        print(f"Saving to {save_name}")
+        save_wave_file(save_name, record_data)
+        print(f"Saved to {save_name}")
+        print(".....")
+        
+
+
     # Draw the spectrogram
-    draw_log_spectrogram(recorded_data[:, 0], samplerate, filename)
+    #draw_log_spectrogram(recorded_data[:, 0], samplerate, filename)
 
 
 
