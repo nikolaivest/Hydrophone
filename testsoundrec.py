@@ -78,10 +78,16 @@ def draw_log_spectrogram(audio_data, samplerate,filename):
 # samplerate = 44100  # Example sample rate, replace with actual sample rate of the audio
 # draw_log_spectrogram(audio_data, samplerate)
 
-
-def main():
+def get_input_devices():
+    """
+    Print the available input devices.
+    """
     print("Available input devices:")
     print(sd.query_devices())
+
+
+def main():
+    get_input_devices()
     device = int(input("Enter the input device index: "))
     duration = float(input("Enter the duration of the recording in seconds: "))
     filename = input("Enter the filename to save the recording: ")
