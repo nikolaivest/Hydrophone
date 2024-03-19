@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import datetime as dt
 from scipy.signal import spectrogram
 
-samplerate = 96000  # Hertz
+samplerate = 88200  # Hertz
 
 def record_audio(duration, samplerate=samplerate, channels=2):
     """
