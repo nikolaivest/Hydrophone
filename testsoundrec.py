@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import datetime as dt
 from scipy.signal import spectrogram
 
-samplerate = 44100  # Hertz
+samplerate = 96000  # Hertz
 
 def record_audio(duration, samplerate=samplerate, channels=2):
     """
@@ -22,7 +22,7 @@ def record_audio(duration, samplerate=samplerate, channels=2):
     print("Recording finished.")
     return recording
 
-def save_wave_file(filename, data, samplerate=44100, channels=2):
+def save_wave_file(filename, data, samplerate=samplerate, channels=2):
     """
     Save recorded data to a WAV file.
     
